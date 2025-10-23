@@ -102,26 +102,26 @@ http://localhost:8080/moussa
 
 
 
-Maquettes et interfaces finales
+## Maquettes et interfaces finales
 
-Authentification :
+### Authentification :
 
 <img width="807" height="938" alt="A2" src="https://github.com/user-attachments/assets/dc70c8dc-1eb8-4b5b-8588-cc987170d435" />
 
 <img width="669" height="675" alt="A1" src="https://github.com/user-attachments/assets/17f33778-543a-4362-aec4-7f8527b0dc21" />
 
-Client :
+### Client :
 
 <img width="1896" height="935" alt="C2" src="https://github.com/user-attachments/assets/e0ec9e1b-b0d9-486d-98b7-1405f5a79910" />
 <img width="1882" height="950" alt="C1" src="https://github.com/user-attachments/assets/572f0c21-43b6-46fb-ad6b-12e59e73f4f5" />
 
 
-Vendeur :
+### Vendeur :
 
 <img width="1828" height="870" alt="V2" src="https://github.com/user-attachments/assets/bc1c251a-db00-4a5b-b6eb-dbe1986e7684" />
 <img width="629" height="658" alt="V1" src="https://github.com/user-attachments/assets/1ae2fc4a-588e-4670-bb8e-d78f98ea3611" />
 
-Admin :
+### Admin :
 
 
 <img width="1915" height="795" alt="AD1" src="https://github.com/user-attachments/assets/9a29a8fd-df36-4031-b6c6-0b77701b46eb" />
