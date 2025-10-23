@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Test Page</title>
+</h:head>
+<h:body>
+    <h1>Test Page</h1>
+    
+    <h:form>
+        <p:messages/>
+        
+        <h:panelGrid columns="2">
+            <h:outputLabel value="Email:"/>
+            <p:inputText value="#{authBean.email}"/>
+            
+            <h:outputLabel value="Password:"/>
+            <p:inputText value="#{authBean.password}"/>
+            
+            <h:outputLabel value="Role:"/>
+            <p:inputText value="#{authBean.selectedRole}"/>
+        </h:panelGrid>
+        
+        <p:commandButton value="Test Register" 
+                         action="#{authBean.register()}"
+                         update="@form"/>
+    </h:form>
+    
+    <hr/>
+    <h3>Debug Info:</h3>
+    <p>Email: #{authBean.email}</p>
+    <p>Password: #{authBean.password}</p>
+    <p>Role: #{authBean.selectedRole}</p>
+</h:body>
+</html>
+

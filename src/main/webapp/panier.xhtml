@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Mon Panier - E-Commerce</ui:define>
+    
+    <ui:define name="content">
+        <script type="text/javascript">
+            window.addEventListener('load', function(){
+                if (typeof rcRefreshPanier === 'function') {
+                    rcRefreshPanier();
+                }
+            });
+        </script>
+        <!-- Page Header -->
+        <div style="text-align: center; margin-bottom: 35px;">
+            <h1 style="font-size: 2.5rem; color: #2d3748; margin-bottom: 10px;">
+                <i class="pi pi-shopping-cart" style="color: #667eea;"/> Mon Panier
+            </h1>
+            <p style="color: #718096; font-size: 1rem;">
+                Gérez vos produits avant de finaliser votre commande
+            </p>
+        </div>
+        
+        <h:form id="panierForm">
+            <p:remoteCommand name="rcRefreshPanier" actionListener="#{panierBean.refresh}" update=":panierForm :messages"/>
+            <!-- Empty Cart Message -->
+            <p:panel rendered="#{panierBean.panierVide}" 
+                     styleClass="info-panel"
+                     style="padding: 60px 40px;">
+                <i class="pi pi-shopping-cart" style="font-size: 5rem; color: #cbd5e0; margin-bottom: 25px;"/>
+                <h2 style="color: #2d3748; margin: 15px 0;">Votre panier est vide</h2>
+                <p style="color: #718096; margin-bottom: 30px; font-size: 1.05rem;">
+                    Parcourez notre catalogue et ajoutez des produits à votre panier
+                </p>
+                <p:button value="Découvrir nos produits" 
+                          icon="pi pi-shopping-bag" 
+                          outcome="/index.xhtml"
+                          styleClass="ui-button-primary"
+                          style="font-size: 1.1rem; padding: 12px 30px;"/>
+            </p:panel>
+            
+            <!-- Cart Items Table -->
+            <p:dataTable id="panierTable" 
+                         value="#{panierBean.lignes}" 
+                         var="ligne"
+                         rendered="#{not panierBean.panierVide}"
+                         styleClass="produits-table"
+                         emptyMessage="Panier vide">
+                
+                <f:facet name="header">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 1.1rem;">
+                            <i class="pi pi-list"/> Articles dans votre panier
+                        </span>
+                        <span style="font-size: 0.9rem; opacity: 0.9;">
+                            #{panierBean.nombreArticles} article(s)
+                        </span>
+                    </div>
+                </f:facet>
+                
+                <p:column headerText="Produit" style="width: 40%;">
+                    <div style="display: flex; align-items: center;">
+                        <div class="product-image-container" style="width: 60px; height: 60px; margin-right: 15px;">
+                            <p:graphicImage value="#{ligne.produit.imageUrl}" 
+                                            rendered="#{not empty ligne.produit.imageUrl}"/>
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f7fafc;"
+                                 rendered="#{empty ligne.produit.imageUrl}">
+                                <i class="pi pi-image" style="font-size: 1.8rem; color: #cbd5e0;"/>
+                            </div>
+                        </div>
+                        <div>
+                            <h:outputText value="#{ligne.produit.libelle}" 
+                                          style="font-weight: 600; font-size: 1.05rem; color: #2d3748; display: block;"/>
+                            <small style="color: #718096;">Réf: #{ligne.produit.id}</small>
+                        </div>
+                    </div>
+                </p:column>
+                
+                <p:column headerText="Prix unitaire" style="width: 15%;">
+                    <h:outputText value="#{ligne.prixUnitaire}" 
+                                  style="font-weight: 600; color: #48bb78;">
+                        <f:convertNumber type="currency" currencySymbol="DH " 
+                                       minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Quantité" style="width: 25%; text-align: center;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <p:commandButton icon="pi pi-minus" 
+                                         action="#{panierBean.diminuerQuantite(ligne.id)}"
+                                         update=":panierForm:panierTable :panierForm:totalPanel :messages"
+                                         styleClass="ui-button-rounded ui-button-outlined ui-button-sm"
+                                         disabled="#{ligne.quantite le 1}"
+                                         title="Diminuer la quantité"/>
+                        
+                        <p:inputNumber id="quantite" 
+                                       value="#{ligne.quantite}" 
+                                       min="1" 
+                                       max="#{ligne.produit.stock}"
+                                       inputStyle="width: 60px; text-align: center; font-weight: 700; font-size: 1.1rem;"
+                                       readonly="true"
+                                       showButtons="false"
+                                       decimalPlaces="0"/>
+                        
+                        <p:commandButton icon="pi pi-plus" 
+                                         action="#{panierBean.augmenterQuantite(ligne.id)}"
+                                         update=":panierForm:panierTable :panierForm:totalPanel :messages"
+                                         styleClass="ui-button-rounded ui-button-outlined ui-button-sm"
+                                         disabled="#{ligne.quantite ge ligne.produit.stock}"
+                                         title="Augmenter la quantité"/>
+                    </div>
+                    <small style="color: #718096; margin-top: 5px; display: block;">
+                        Stock disponible: #{ligne.produit.stock}
+                    </small>
+                </p:column>
+                
+                <p:column headerText="Sous-total" style="width: 15%;">
+                    <h:outputText value="#{ligne.sousTotal}" 
+                                  style="font-weight: 700; font-size: 1.15rem; color: #2d3748;">
+                        <f:convertNumber type="currency" currencySymbol="DH " 
+                                       minFractionDigits="2" maxFractionDigits="2"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Actions" style="width: 12%; text-align: center;">
+                    <p:commandButton value="Supprimer" 
+                                     icon="pi pi-trash" 
+                                     action="#{panierBean.supprimerLigne(ligne.id)}"
+                                     update=":panierForm:panierTable :panierForm:totalPanel :messages"
+                                     styleClass="ui-button-rounded ui-button-danger ui-button-sm"
+                                     title="Supprimer cet article du panier"/>
+                </p:column>
+            </p:dataTable>
+            
+            <!-- Cart Summary Panel -->
+            <p:panel id="totalPanel" 
+                     rendered="#{not panierBean.panierVide}"
+                     style="margin-top: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                    <!-- Left Actions -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <p:commandButton value="Vider le panier" 
+                                         icon="pi pi-trash"
+                                         action="#{panierBean.viderPanier()}"
+                                         update=":panierForm :messages"
+                                         styleClass="ui-button-outlined ui-button-danger"/>
+                        
+                        <p:button value="Continuer mes achats" 
+                                  icon="pi pi-arrow-left"
+                                  outcome="/index.xhtml"
+                                  styleClass="ui-button-outlined ui-button-info"/>
+                    </div>
+                    
+                    <!-- Right Summary & Checkout -->
+                    <div style="text-align: right;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px 30px; border-radius: 10px; margin-bottom: 15px;">
+                            <p style="color: rgba(255,255,255,0.9); margin: 0 0 8px 0; font-size: 0.95rem; font-weight: 500;">
+                                TOTAL À PAYER
+                            </p>
+                            <h2 style="color: white; margin: 0; font-size: 2.2rem; font-weight: 700;">
+                                <h:outputText value="#{panierBean.total}">
+                                    <f:convertNumber type="currency" currencySymbol="" 
+                                                   minFractionDigits="2" maxFractionDigits="2"/>
+                                </h:outputText>
+                                <span style="font-size: 1.3rem; margin-left: 5px;">DH</span>
+                            </h2>
+                        </div>
+                        
+                        <p:commandButton value="Valider ma commande" 
+                                         icon="pi pi-check-circle"
+                                         action="#{panierBean.validerCommande()}"
+                                         update=":messages"
+                                         styleClass="ui-button-success"
+                                         style="font-size: 1.1rem; padding: 12px 35px; font-weight: 600;"/>
+                    </div>
+                </div>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
+

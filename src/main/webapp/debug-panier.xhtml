@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Debug Panier</ui:define>
+    
+    <ui:define name="content">
+        <h:form>
+            <p:panel header="🔍 Debug Information" style="margin: 20px;">
+                <h3>User Information:</h3>
+                <p><strong>Logged In:</strong> #{internauteBean.loggedIn}</p>
+                <p><strong>User Name:</strong> #{internauteBean.currentUserName}</p>
+                <p><strong>User Email:</strong> #{internauteBean.currentUserEmail}</p>
+                <p><strong>User ID:</strong> #{internauteBean.currentUserId}</p>
+                <p><strong>Panier ID:</strong> #{internauteBean.panierId}</p>
+                
+                <hr/>
+                
+                <h3>Panier Information:</h3>
+                <p><strong>Initialized:</strong> #{panierBean.initialized}</p>
+                <p><strong>Panier Vide:</strong> #{panierBean.panierVide}</p>
+                <p><strong>Nombre Articles:</strong> #{panierBean.nombreArticles}</p>
+                <p><strong>Total:</strong> #{panierBean.total} DH</p>
+                <p><strong>Nombre Lignes:</strong> #{panierBean.lignes.size()}</p>
+                
+                <hr/>
+                
+                <h3>Lignes:</h3>
+                <p:dataTable value="#{panierBean.lignes}" var="ligne" emptyMessage="Aucune ligne">
+                    <p:column headerText="ID">#{ligne.id}</p:column>
+                    <p:column headerText="Produit ID">#{ligne.produit.id}</p:column>
+                    <p:column headerText="Produit">#{ligne.produit.libelle}</p:column>
+                    <p:column headerText="Quantité">#{ligne.quantite}</p:column>
+                    <p:column headerText="Prix">#{ligne.prixUnitaire}</p:column>
+                </p:dataTable>
+                
+                <hr/>
+                
+                <p:commandButton value="🔄 Refresh Panier" 
+                                 action="#{panierBean.refresh()}"
+                                 update="@form"
+                                 styleClass="ui-button-info"/>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
+

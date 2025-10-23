@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><ui:insert name="title">E-Commerce</ui:insert></title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+<h:body>
+    <!-- Menu Navigation -->
+    <p:menubar styleClass="main-menubar">
+        <p:menuitem value="Accueil" icon="pi pi-home" url="#{request.contextPath}/index.xhtml"/>
+        
+        <p:menuitem value="Mon Panier" icon="pi pi-shopping-cart" url="#{request.contextPath}/panier.xhtml" 
+                    rendered="#{internauteBean.loggedIn}"
+                    badge="#{panierBean.nombreArticles}"
+                    badgeClass="#{panierBean.nombreArticles gt 0 ? 'ui-badge-danger' : ''}"/>
+        
+        <p:menuitem value="Administration" icon="pi pi-cog" url="#{request.contextPath}/admin/produits.xhtml"
+                    rendered="#{internauteBean.admin or internauteBean.vendeur}"/>
+        
+        <p:menuitem value="Users" icon="pi pi-users" url="#{request.contextPath}/admin/users.xhtml"
+                    rendered="#{internauteBean.admin}"/>
+        
+        <f:facet name="options">
+            <h:form rendered="#{internauteBean.loggedIn}" style="display: flex; align-items: center; gap: 15px; margin: 0;">
+                <span style="color: white; font-weight: 600; padding: 8px 15px; background: rgba(255,255,255,0.15); border-radius: 20px;">
+                    <i class="pi pi-user" style="margin-right: 5px;"/> 
+                    #{internauteBean.currentUserName}
+                </span>
+                <p:commandButton value="Déconnexion" 
+                                 icon="pi pi-sign-out" 
+                                 action="#{authBean.logout}" 
+                                 styleClass="ui-button-outlined ui-button-sm"
+                                 style="color: white; border-color: white;"
+                                 ajax="false"/>
+            </h:form>
+            
+            <h:panelGroup rendered="#{not internauteBean.loggedIn}" style="display: flex; gap: 10px;">
+                <h:link outcome="/login.xhtml" 
+                        styleClass="ui-button ui-button-outlined ui-button-sm"
+                        style="color: white; border-color: white; text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; gap: 0.5rem;">
+                    <i class="pi pi-sign-in"/>
+                    <span>Connexion</span>
+                </h:link>
+                <h:link outcome="/register.xhtml" 
+                        styleClass="ui-button ui-button-success ui-button-sm"
+                        style="text-decoration: none; display: inline-flex; align-items: center; padding: 0.5rem 1rem; gap: 0.5rem;">
+                    <i class="pi pi-user-plus"/>
+                    <span>Inscription</span>
+                </h:link>
+            </h:panelGroup>
+        </f:facet>
+    </p:menubar>
+    
+    <!-- Messages globaux -->
+    <p:growl id="messages" showDetail="true" life="4000" sticky="false"/>
+    
+    <!-- Contenu principal -->
+    <div class="container" style="padding: 20px;">
+        <ui:insert name="content">
+            <!-- Le contenu de la page sera inséré ici -->
+        </ui:insert>
+    </div>
+    
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 20px; margin-top: 50px; background-color: #f8f9fa;">
+        <p>© 2025 E-Commerce - Tous droits réservés</p>
+    </footer>
+</h:body>
+</html>
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Connexion - E-Commerce</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <h:outputStylesheet library="css" name="auth.css"/>
+</h:head>
+<h:body styleClass="auth-container">
+    
+    <p:growl id="messages" showDetail="true" life="4000" sticky="false"/>
+    
+    <div class="auth-card">
+        <div class="auth-header">
+            <i class="pi pi-sign-in auth-icon"></i>
+            <h2 class="auth-title">Connexion</h2>
+            <p class="auth-subtitle">Connectez-vous à votre compte</p>
+        </div>
+        
+        <h:form id="loginForm">
+            <p:messages id="msgs" showDetail="false" closable="true"/>
+            
+            <div class="form-group">
+                <label for="email" class="form-label form-label-required">Email</label>
+                <p:inputText id="email" 
+                             value="#{authBean.email}"
+                             placeholder="votre@email.com"
+                             required="false"
+                             styleClass="ui-inputfield"/>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label form-label-required">Mot de passe</label>
+                <p:password id="password" 
+                            value="#{authBean.password}"
+                            placeholder="Entrez votre mot de passe"
+                            required="false"
+                            feedback="false"
+                            toggleMask="true"/>
+            </div>
+            
+            <p:commandButton value="Se connecter" 
+                             icon="pi pi-sign-in"
+                             styleClass="ui-button-primary"
+                             action="#{authBean.login}"
+                             update="@form messages"
+                             ajax="true"/>
+            
+            <div class="auth-footer">
+                <p style="color: #718096; margin: 15px 0;">
+                    Pas encore de compte ?
+                    <h:link value="S'inscrire ici" outcome="/register.xhtml" styleClass="auth-link"/>
+                </p>
+                
+                <p:divider/>
+                
+                <h:link value="← Retour à l'accueil" outcome="/index.xhtml" styleClass="back-link"/>
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

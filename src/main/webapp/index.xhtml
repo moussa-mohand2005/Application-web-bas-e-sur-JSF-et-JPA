@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/WEB-INF/templates/layout.xhtml">
+    <ui:define name="title">Vitrine - E-Commerce</ui:define>
+    
+    <ui:define name="content">
+        <!-- Page Header -->
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h1 style="font-size: 2.5rem; color: #2d3748; margin-bottom: 10px;">
+                <i class="pi pi-shopping-bag" style="color: #667eea;"/> Boutique en Ligne
+            </h1>
+            <p style="color: #718096; font-size: 1.1rem;">
+                Découvrez nos produits de qualité
+            </p>
+        </div>
+        
+        <!-- Alert for non-logged users -->
+        <p:panel rendered="#{not internauteBean.loggedIn}" 
+                 styleClass="info-panel"
+                 style="margin-bottom: 30px;">
+            <i class="pi pi-info-circle" style="font-size: 3rem; color: #4299e1;"/>
+            <h3 style="color: #2d3748; margin: 15px 0;">Connectez-vous pour commander</h3>
+            <p style="color: #718096; margin-bottom: 20px;">
+                Créez un compte ou connectez-vous pour ajouter des produits à votre panier
+            </p>
+            <p:button value="Se connecter" icon="pi pi-sign-in" 
+                      outcome="/login.xhtml" 
+                      styleClass="ui-button-primary"
+                      style="margin-right: 10px;"/>
+            <p:button value="Créer un compte" icon="pi pi-user-plus" 
+                      outcome="/register.xhtml" 
+                      styleClass="ui-button-success"/>
+        </p:panel>
+        
+        <!-- Products Cards -->
+        <h:form id="vitrineForm">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+                <h2 style="font-size: 1.5rem; color: #2d3748; margin: 0;">
+                    <i class="pi pi-th-large" style="color: #667eea; margin-right: 10px;"/> Catalogue Produits
+                </h2>
+                <span style="font-size: 0.9rem; color: #718096; background: #f7fafc; padding: 8px 16px; border-radius: 20px;">
+                    #{vitrineBean.produits.size()} produit(s) disponible(s)
+                </span>
+            </div>
+            
+            <!-- Products Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                <ui:repeat value="#{vitrineBean.produits}" var="produit">
+                    <p:card style="height: 100%; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: transform 0.2s, box-shadow 0.2s;"
+                            styleClass="product-card"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.15)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)';">
+                        
+                        <!-- Product Image -->
+                        <div style="height: 200px; overflow: hidden; border-radius: 8px 8px 0 0; background: #f7fafc; display: flex; align-items: center; justify-content: center;">
+                            <p:graphicImage value="#{produit.imageUrl}" 
+                                            style="width: 100%; height: 100%; object-fit: cover;"
+                                            rendered="#{not empty produit.imageUrl}"/>
+                            <i class="pi pi-image" style="font-size: 4rem; color: #cbd5e0;"
+                               rendered="#{empty produit.imageUrl}"/>
+                        </div>
+                        
+                        <!-- Product Info -->
+                        <div style="padding: 20px;">
+                            <!-- Product Name -->
+                            <h3 style="font-size: 1.2rem; font-weight: 600; color: #2d3748; margin: 0 0 10px 0; line-height: 1.3;">
+                                #{produit.libelle}
+                            </h3>
+                            
+                            <!-- Product Description -->
+                            <p style="color: #718096; font-size: 0.9rem; margin: 0 0 15px 0; line-height: 1.4; height: 40px; overflow: hidden;"
+                               rendered="#{not empty produit.description}">
+                                #{produit.description}
+                            </p>
+                            
+                            <!-- Price -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                                <span style="font-size: 1.4rem; font-weight: 700; color: #48bb78;">
+                                    DH #{produit.prix}
+                                </span>
+                                
+                                <!-- Stock Badge -->
+                                <p:badge value="#{produit.stock}" 
+                                         severity="#{produit.stock gt 10 ? 'success' : (produit.stock gt 0 ? 'warning' : 'danger')}"
+                                         style="font-size: 0.8rem;"/>
+                            </div>
+                            
+                            <!-- Stock Status -->
+                            <div style="margin-bottom: 20px;">
+                                <small style="color: #718096; font-style: italic;">
+                                    <i class="pi pi-info-circle" style="margin-right: 5px;"/>
+                                    #{produit.stock gt 10 ? 'En stock' : (produit.stock gt 0 ? 'Stock limité' : 'Rupture de stock')}
+                                </small>
+                            </div>
+                            
+                            <!-- Add to Cart Button -->
+                            <p:commandButton value="Ajouter au panier" 
+                                             icon="pi pi-shopping-cart"
+                                             action="#{vitrineBean.ajouterAuPanier(produit.id)}"
+                                             disabled="#{produit.stock le 0 or not internauteBean.loggedIn}"
+                                             styleClass="ui-button-success ui-button-block"
+                                             style="width: 100%; padding: 12px; font-weight: 600; border-radius: 8px;"
+                                             title="#{produit.stock le 0 ? 'Produit en rupture de stock' : (not internauteBean.loggedIn ? 'Connectez-vous pour commander' : 'Ajouter au panier')}"/>
+                        </div>
+                    </p:card>
+                </ui:repeat>
+            </div>
+            
+            <!-- Empty State -->
+            <div style="text-align: center; padding: 60px 20px; color: #718096;"
+                 rendered="#{empty vitrineBean.produits}">
+                <i class="pi pi-box" style="font-size: 4rem; color: #cbd5e0; margin-bottom: 20px;"/>
+                <h3 style="color: #2d3748; margin-bottom: 10px;">Aucun produit disponible</h3>
+                <p>Revenez plus tard pour découvrir nos nouveaux produits.</p>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>
+
